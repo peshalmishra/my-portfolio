@@ -327,7 +327,7 @@ function Projects() {
                                     damping: 20,
                                     mass: 1.2
                                 },
-                                className: `absolute inset-0 flex flex-col p-6 md:p-8 rounded-[2.5rem] overflow-hidden border transition-colors duration-300 group
+                                className: `absolute inset-0 flex flex-col p-6 md:p-8 rounded-3xl overflow-hidden border transition-colors duration-300 group
                                     ${position === 0 ? "bg-neutral-100/90 dark:bg-black/40 border-white/40 dark:border-white/10 backdrop-blur-3xl shadow-[0_12px_44px_0_rgba(0,0,0,0.2)] dark:shadow-[0_4px_32px_0_rgba(255,255,255,0.03)]" : "bg-neutral-200/50 dark:bg-neutral-900/40 border-transparent"}`,
                                 onClick: ()=>{
                                     if (position === 1) handleNext();
@@ -343,7 +343,7 @@ function Projects() {
                                 "aria-hidden": position !== 0,
                                 children: [
                                     position === 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "absolute inset-0 rounded-[2.5rem] bg-gradient-to-tr from-transparent via-white/5 to-white/20 dark:to-white/10 pointer-events-none"
+                                        className: "absolute inset-0 rounded-3xl bg-gradient-to-tr from-transparent via-white/5 to-white/20 dark:to-white/10 pointer-events-none"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/Projects.tsx",
                                         lineNumber: 239,
@@ -904,9 +904,16 @@ function ProjectsSkills() {
             ease: "easeOut"
         },
         className: "relative w-full mt-32 px-4 pb-4",
+        style: {
+            minHeight: "800px"
+        },
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "absolute inset-0 pointer-events-none text-neutral-400 dark:text-white",
+                style: {
+                    minHeight: "100%",
+                    height: "100%"
+                },
                 "aria-hidden": true,
                 children: [
                     ORB_POSITIONS.map((orb, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["motion"].div, {
@@ -4333,7 +4340,10 @@ function CertCard({ cert, index }) {
                         columnNumber: 17
                     }, this),
                     isPlaceholder && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "absolute inset-0 z-20 flex items-center justify-center rounded-2xl backdrop-blur-[2px] bg-white/60 dark:bg-black/60",
+                        className: "absolute inset-0 z-20 flex items-center justify-center rounded-2xl bg-white/60 dark:bg-black/60",
+                        style: {
+                            backdropFilter: "blur(2px)"
+                        },
                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "flex flex-col items-center gap-2",
                             children: [

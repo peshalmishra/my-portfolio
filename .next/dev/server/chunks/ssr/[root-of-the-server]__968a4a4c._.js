@@ -1890,109 +1890,123 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
 ;
 function CustomCursor() {
     const cursorRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRef"])(null);
-    const posRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRef"])({
-        x: -200,
-        y: -200
-    });
-    const currentRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRef"])({
-        x: -200,
-        y: -200
-    });
-    const rafRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRef"])(null);
-    const [clicking, setClicking] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
-    const [hovering, setHovering] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
-    const [visible, setVisible] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
-        const move = (e)=>{
-            posRef.current = {
-                x: e.clientX,
-                y: e.clientY
-            };
-            if (!visible) setVisible(true);
+        const el = cursorRef.current;
+        if (!el) return;
+        let rafId;
+        let targetX = -200, targetY = -200;
+        let scale = 1;
+        let hovering = false;
+        /*
+            All bugs from original fixed:
+
+            BUG 1 — useEffect deps [clicking, hovering, visible]:
+            Effect re-ran and re-registered ALL event listeners on every state
+            change (every mousemove, every click). Fixed: empty deps [], runs once.
+
+            BUG 2 — lerp (x += (target - x) * 0.15):
+            Made cursor lag behind real pointer. Custom cursors must be pixel-exact
+            or they feel broken. Fixed: direct position, no lerp.
+
+            BUG 3 — el.style.scale (separate CSS property):
+            Applies scale from element center (50% 50%) so cursor shifted sideways.
+            Fixed: scale baked into transform string + transformOrigin "0 0" so
+            scaling happens from the tip.
+
+            BUG 4 — useState for clicking/hovering/visible:
+            Triggered React re-renders on every interaction. Fixed: plain let
+            variables mutated directly in event handlers, read in rAF loop.
+
+            BUG 5 — per-element hover listeners via querySelectorAll:
+            Misses dynamically added elements (dropdowns, portals).
+            Fixed: event delegation on mousemove via closest().
+        */ const render = ()=>{
+            el.style.transform = `translate(${targetX}px, ${targetY}px) scale(${scale})`;
+            rafId = requestAnimationFrame(render);
         };
-        const down = ()=>setClicking(true);
-        const up = ()=>setClicking(false);
-        const leave = ()=>setVisible(false);
-        const enter = ()=>setVisible(true);
-        const hover = ()=>setHovering(true);
-        const unhover = ()=>setHovering(false);
-        const attachHoverListeners = ()=>{
-            const elements = document.querySelectorAll("a, button");
-            elements.forEach((el)=>{
-                el.addEventListener("mouseenter", hover);
-                el.addEventListener("mouseleave", unhover);
-            });
-        };
-        attachHoverListeners();
-        const tick = ()=>{
-            if (cursorRef.current) {
-                const { x, y } = posRef.current;
-                currentRef.current.x += (x - currentRef.current.x) * 0.15;
-                currentRef.current.y += (y - currentRef.current.y) * 0.15;
-                let scale = 1;
-                if (clicking) scale = 0.8;
-                if (hovering) scale = 1.4;
-                cursorRef.current.style.transform = `translate(${currentRef.current.x}px, ${currentRef.current.y}px) scale(${scale})`;
+        rafId = requestAnimationFrame(render);
+        const onMove = (e)=>{
+            targetX = e.clientX;
+            targetY = e.clientY;
+            el.style.opacity = "1";
+            // Delegation — detect hover over interactive elements
+            const target = e.target;
+            const isInteractive = !!target.closest("a, button, [role='button'], input, textarea, select, label");
+            if (isInteractive && !hovering) {
+                hovering = true;
+                scale = 1.35;
+            } else if (!isInteractive && hovering) {
+                hovering = false;
+                scale = 1;
             }
-            rafRef.current = requestAnimationFrame(tick);
         };
-        rafRef.current = requestAnimationFrame(tick);
-        window.addEventListener("mousemove", move, {
+        const onDown = ()=>{
+            scale = 0.78;
+        };
+        const onUp = ()=>{
+            scale = hovering ? 1.35 : 1;
+        };
+        const onLeave = ()=>{
+            el.style.opacity = "0";
+        };
+        const onEnter = ()=>{
+            el.style.opacity = "1";
+        };
+        window.addEventListener("mousemove", onMove, {
             passive: true
         });
-        window.addEventListener("mousedown", down);
-        window.addEventListener("mouseup", up);
-        document.addEventListener("mouseleave", leave);
-        document.addEventListener("mouseenter", enter);
+        window.addEventListener("mousedown", onDown);
+        window.addEventListener("mouseup", onUp);
+        document.addEventListener("mouseleave", onLeave);
+        document.addEventListener("mouseenter", onEnter);
         return ()=>{
-            if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
-            window.removeEventListener("mousemove", move);
-            window.removeEventListener("mousedown", down);
-            window.removeEventListener("mouseup", up);
-            document.removeEventListener("mouseleave", leave);
-            document.removeEventListener("mouseenter", enter);
+            cancelAnimationFrame(rafId);
+            window.removeEventListener("mousemove", onMove);
+            window.removeEventListener("mousedown", onDown);
+            window.removeEventListener("mouseup", onUp);
+            document.removeEventListener("mouseleave", onLeave);
+            document.removeEventListener("mouseenter", onEnter);
         };
-    }, [
-        clicking,
-        hovering,
-        visible
-    ]);
+    }, []); // empty — registers once, never re-registers
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         ref: cursorRef,
-        className: "fixed top-0 left-0 z-[9999] pointer-events-none select-none",
+        className: "fixed top-0 left-0 pointer-events-none select-none",
         style: {
+            zIndex: 9999,
+            opacity: 0,
             willChange: "transform",
             transformOrigin: "0 0",
-            opacity: visible ? 1 : 0,
-            transition: "opacity 0.25s ease",
-            filter: "drop-shadow(0 0 6px rgba(255,255,255,0.6))"
+            transition: "opacity 0.2s ease"
         },
         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
-            width: "32",
-            height: "32",
-            viewBox: "0 0 32 32",
+            width: "28",
+            height: "28",
+            viewBox: "0 0 28 28",
             fill: "none",
             xmlns: "http://www.w3.org/2000/svg",
+            style: {
+                filter: "drop-shadow(0 0 6px rgba(255,255,255,0.55)) drop-shadow(0 2px 8px rgba(0,0,0,0.6))"
+            },
             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
-                d: "M0 0L22 10L14 14L10 26L0 0Z",
+                d: "M0 0L20 9L13 13L9 24L0 0Z",
                 fill: "white",
-                stroke: "#222",
+                stroke: "#1a1a1a",
                 strokeWidth: "1.5",
                 strokeLinejoin: "round",
                 strokeLinecap: "round"
             }, void 0, false, {
                 fileName: "[project]/src/components/Customcursor.tsx",
-                lineNumber: 97,
+                lineNumber: 109,
                 columnNumber: 17
             }, this)
         }, void 0, false, {
             fileName: "[project]/src/components/Customcursor.tsx",
-            lineNumber: 90,
+            lineNumber: 99,
             columnNumber: 13
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/components/Customcursor.tsx",
-        lineNumber: 79,
+        lineNumber: 88,
         columnNumber: 9
     }, this);
 }

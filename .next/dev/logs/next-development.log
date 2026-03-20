@@ -1,7 +1,6 @@
-[00:00:01.732] Server  LOG     ✓ Ready in 1234ms
-[00:00:05.924] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:00:32.683] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:04:36.400] Server  LOG     ✓ Compiled in 69ms
-[00:04:49.510] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:06:04.827] Server  LOG     ✓ Compiled in 68ms
-[00:07:15.459] Server  LOG     ✓ Compiled in 57ms
+[00:00:02.610] Server  LOG     ✓ Ready in 1885ms
+[00:00:07.182] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:28.819] Browser WARN    Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly.
+[00:01:53.787] Server  LOG     ✓ Compiled in 20ms
+[00:02:10.676] Server  LOG     ✓ Compiled in 39ms
+[00:03:42.969] Server  LOG     ✓ Compiled in 62ms
